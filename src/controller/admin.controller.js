@@ -1,5 +1,4 @@
 import bycrypt from 'bcryptjs';
-
 import Admin from '../models/admin.model.js';
 import Question from '../models/question.model.js';
 import generateTokenSetCookie from "../utils/generateToken.js";
