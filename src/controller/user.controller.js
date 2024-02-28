@@ -14,13 +14,9 @@ export const signUpUser = async (req, res) => {
             return res.status(400).json({ error: "User Already Exists" });
         }
 
-        // const boyProfilePic = `https://avatar.iran.liara.run/public/boy?username=${userName}`
-        // const girlProfilePic = `https://avatar.iran.liara.run/public/girl?username=${userName}`
-
         const newUser = new User({
             hallTicketNo,
             dateOfBirth
-            // profilePic: gender === 'male' ? boyProfilePic : girlProfilePic
         })
 
         if (newUser) {
@@ -52,6 +48,7 @@ export const logInUser = async (req, res) => {
     try {
         const { hallTicketNo, dateOfBirth } = req.body;
         const user = await User.findOne({ hallTicketNo });
+        console.log(user)
 
         if (!user) {
             return res.status(400).json({ error: "Invalid Hall Ticket Number" });
