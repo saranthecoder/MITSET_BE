@@ -51,20 +51,17 @@ export const logInAdmin = async (req, res) => {
         const isPasswordCorrect = await bycrypt.compare(password, user?.password || "");
 
         if (!user || !isPasswordCorrect) {
-            return res.status(400).json({ error: "Invalid Username or Password" });
+            return res.status(400).json({ success: false, error: "Invalid Username or Password" });
         }
 
         generateTokenSetCookie(user._id,res);
 
         console.log("Admin Logged In");
-        res.status(200).json({
-            _id: user._id,
-            userName: user.userName,
-        });
+        res.status(200).json({success:true});
 
     } catch (error) {
         console.log("Error in Login controller", error.message);
-        res.status(500).json({ error: "Internal Server error" })
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
 
     }
 }
