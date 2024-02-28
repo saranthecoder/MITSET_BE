@@ -1,4 +1,3 @@
-// Import Mongoose
 import mongoose from 'mongoose';
 
 // Define schema for questions
