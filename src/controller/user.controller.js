@@ -2,6 +2,7 @@ import shuffle from 'lodash/shuffle.js';
 import User from "../models/user.model.js";
 import generateTokenSetCookie from "../utils/generateToken.js";
 import Question from "../models/question.model.js";
+import UserAnswer from '../models/userAnswer.model.js';
 
 // ---------------------user signup----------------------- ✅
 export const signUpUser = async (req, res) => {
@@ -48,7 +49,7 @@ export const logInUser = async (req, res) => {
     try {
         const { hallTicketNo, dateOfBirth } = req.body;
         const user = await User.findOne({ hallTicketNo });
-        console.log(user)
+        // console.log(user)
 
         if (!user) {
             return res.status(400).json({ error: "Invalid Hall Ticket Number" });
@@ -104,3 +105,33 @@ export const getUserQP = async (req, res) => {
 };
 
 
+// ------------------- submit answer --------------------- ✅
+export const storeUserAnswerData = async (req, res) => {
+    
+    try {
+        
+        const hallTicketNo = req.user.hallTicketNo;
+        const dateOfBirth = req.user.dateOfBirth
+
+        // Extract data from the request body
+        const {questions } = req.body;
+
+        // Create a new UserAnswer document
+        const newUserAnswer = new UserAnswer({
+            hallTicketNo,
+            dateOfBirth: new Date(dateOfBirth),
+            questions
+        });
+
+        // Save the new UserAnswer to the database
+        await newUserAnswer.save();
+
+        res.cookie("jwt","",{maxAge:0}); // token got expire
+
+        res.status(201).json({ success: true, message: 'Hall ticket data saved successfully.' });
+    } catch (error) {
+        console.error('Error saving hall ticket data:', error.message);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+    
+};
