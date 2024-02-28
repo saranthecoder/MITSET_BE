@@ -58,21 +58,16 @@ export const logInUser = async (req, res) => {
         const isDOBCorrect = user.dateOfBirth.toISOString().split('T')[0] === dateOfBirth;
 
         if (!isDOBCorrect) {
-            return res.status(400).json({ error: "Invalid Date of Birth" });
+            return res.status(400).json({success:false, error: "Invalid Date of Birth" });
         }
 
         generateTokenSetCookie(user._id, res);
 
         console.log("User Logged In");
-        res.status(200).json({
-            _id: user._id,
-            hallTicketNo: user.hallTicketNo,
-            dateOfBirth: user.dateOfBirth,
-            // profilePic: user.profilePic
-        });
+        res.status(200).json({success:true});
     } catch (error) {
         console.log("Error in Login controller", error.message);
-        res.status(500).json({ error: "Internal Server error" });
+        res.status(500).json({success:false, error: "Internal Server error" });
     }
 };
 
