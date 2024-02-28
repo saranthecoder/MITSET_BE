@@ -1,0 +1,59 @@
+{
+    "hallticketNumber":"12345"
+    "questions": [
+        {
+            "subjectId": "65d46f256de63c619e174416",
+            "data": [
+                {
+                    "questionId": "65d46f256de63c619e174417",
+                    "optionsId": "65d46f256de63c619e174419"
+
+                },
+                {
+                    "questionId": "65d46f256de63c619e17441c",
+                    "optionsId" : "65d46f256de63c619e174420"
+                },
+                {
+                    "questionId": "65d46f256de63c619e174421",
+                    "optionsId": "65d46f256de63c619e174425"
+                }
+            ]
+        },
+        {
+            "subjectId": "65d46f256de63c619e174426",
+            "data": [
+                {
+                    "questionId": "65d46f256de63c619e174427",
+                    "optionsId": "65d46f256de63c619e17442a"
+                  
+                },
+                {
+                    "questionId": "65d46f256de63c619e17442c",
+                    "optionsId": "65d46f256de63c619e17442d"
+                     
+                },
+                {
+                    "questionId": "65d46f256de63c619e174431",
+                    "optionsId": "65d46f256de63c619e174432"
+                }
+            ]
+        },
+        {
+            "subjectId": "65d46f256de63c619e174406",
+            "data": [
+                {
+                    "questionId": "65d46f256de63c619e174411",
+                    "optionsId": "65d46f256de63c619e174412"
+                },
+                {
+                    "questionId": "65d46f256de63c619e174407",
+                    "optionsId": "65d46f256de63c619e174409"
+                },
+                {
+                    "questionId": "65d46f256de63c619e17440c",
+                    "optionsId": "65d46f256de63c619e17440f"
+                }
+            ]
+        }
+    ]
+}

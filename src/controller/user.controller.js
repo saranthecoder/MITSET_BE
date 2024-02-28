@@ -1,3 +1,4 @@
+import shuffle from 'lodash/shuffle.js';
 import User from "../models/user.model.js";
 import generateTokenSetCookie from "../utils/generateToken.js";
 import Question from "../models/question.model.js";
@@ -80,30 +81,34 @@ export const logInUser = async (req, res) => {
 
 
 // ------------- getting question paper for the user----------------  ✅
+
+// shuffled question paper ✅
 export const getUserQP = async (req, res) => {
     try {
-        // Retrieve data from the database using find or any other suitable query
+        // Retrieve data from the database 
         const savedQuestions = await Question.find();
 
         // Extract subject, question, and options ids with text from the retrieved data
-        const response = savedQuestions.map((subjectData) => {
+        const shuffledResponse = savedQuestions.map((subjectData) => {
             const { _id: subjectId, subject, data } = subjectData;
-            const questions = data.map((questionData) => {
+
+            // Shuffle the order of questions for each subject
+            const shuffledQuestions = shuffle(data.map((questionData) => {
                 const { _id: questionId, question, options } = questionData;
-                const optionsData = options.map((option) => ({
-                    _id: option._id,
-                    text: option.text
-                }));
 
-                return { questionId, question, options: optionsData };
-            });
+                // Shuffle the options for each question
+                const shuffledOptions = shuffle(options);
 
-            return { subjectId, subject, data };
+                return { questionId, question, options: shuffledOptions };
+            }));
+
+            return { subjectId,subject, data: shuffledQuestions };
         });
 
-        res.status(200).json({ questions: response });
+        res.status(200).json({ questions: shuffledResponse });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+};
+
 
