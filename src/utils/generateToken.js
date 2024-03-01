@@ -11,6 +11,9 @@ const generateTokenSetCookie = (userId, res) => {
         sameSite: "strict",
         secure: process.env.NODE_ENV !== "development",
     });
+
+    // Send the token in the response as well
+   // res.status(200).json({ token });
 }
 
 export default generateTokenSetCookie;

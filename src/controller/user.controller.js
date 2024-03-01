@@ -63,9 +63,9 @@ export const logInUser = async (req, res) => {
         }
 
         generateTokenSetCookie(user._id, res);
-
+      
         console.log("User Logged In");
-        res.status(200).json({success:true});
+        res.status(200).json({id:user._id,success:true});
     } catch (error) {
         console.log("Error in Login controller", error.message);
         res.status(500).json({success:false, error: "Internal Server error" });
