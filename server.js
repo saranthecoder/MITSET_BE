@@ -13,9 +13,10 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 app.use(cors({
-    origin: '*',
+    origin: 'https://mitset.netlify.app',  // Specify the exact origin
     credentials: true, // Enable sending cookies
 }));
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.json());
