@@ -107,6 +107,9 @@ export const getUserQP = async (req, res) => {
 
 // ------------------- submit answer --------------------- ✅
 export const storeUserAnswerData = async (req, res) => {
+
+    let physicsData, chemistryData, mathematicsData;
+    let physicsDataDB, chemistryDataDB, mathematicsDataDB;
     
     try {
         
@@ -115,15 +118,42 @@ export const storeUserAnswerData = async (req, res) => {
 
         // Extract data from the request body
         const {questions } = req.body;
+        questions.forEach(element => {
+            if (element.subject == 'physics') {
+                physicsData = element.data;
+            } else if (element.subject == 'chemistry') {
+                chemistryData = element.data;
+            } else if (element.subject == 'mathematics') {
+                mathematicsData = element.data;
+            }
+        });
 
-        // Create a new UserAnswer document
+        const questionsDB = await Question.find({});
+        questionsDB.forEach(element => {
+            if (element.subject == 'physics') {
+                physicsDataDB = element.data;
+            } else if (element.subject == 'chemistry') {
+                chemistryDataDB = element.data;
+            } else if (element.subject == 'mathematics') {
+                mathematicsDataDB = element.data;
+            }
+        });
+
+        const physicsAnswers = await saveAnswers(physicsData, physicsDataDB);
+        const chemistryAnswers = await saveAnswers(chemistryData, chemistryDataDB);
+        const mathematicsAnswers = await saveAnswers(mathematicsData, mathematicsDataDB);
+
         const newUserAnswer = new UserAnswer({
             hallTicketNo,
             dateOfBirth: new Date(dateOfBirth),
-            questions
+            questions: [
+                { subject: 'physics', data: physicsAnswers },
+                { subject: 'chemistry', data: chemistryAnswers },
+                { subject: 'mathematics', data: mathematicsAnswers },
+            ],
         });
 
-        // Save the new UserAnswer to the database
+        // Save the new UserAnswer to the database  
         await newUserAnswer.save();
 
         res.cookie("jwt","",{maxAge:0}); // token got expire
@@ -135,3 +165,31 @@ export const storeUserAnswerData = async (req, res) => {
     }
     
 };
+
+async function saveAnswers(data, dataDB) {
+    try {
+        const answers = [];
+
+        for (const item of data) {
+            const storedQuestion = dataDB.find(q => q.question === item.question);
+
+            if (storedQuestion) {
+                const selectedOption = storedQuestion.options.find(
+                    option => option.text === item.options
+                );
+
+                if (selectedOption) {
+
+                    answers.push({
+                        question: storedQuestion._id,
+                        options: selectedOption._id
+                    });
+                }
+            }
+        }
+
+        return answers;
+    } catch (error) {
+        console.error("Error in saveAnswers function:", error);
+    }
+}
