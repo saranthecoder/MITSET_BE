@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "server": "nodemon server.js",
-    "build": "your_build_command_here"
+    "build": "node server"
   },
   "author": "",
   "license": "ISC",
