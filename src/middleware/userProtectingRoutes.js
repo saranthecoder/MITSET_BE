@@ -11,7 +11,7 @@ const protectRoute = async (req,res,next) => {
         const decoded = jwt.verify(token,process.env.JWT_SECRET);
 
         if(!decoded){
-            return res.status(401).json({erroe:"Unautherises - Invalid user"});
+            return res.status(401).json({error:"Unautherized - Invalid user"});
         }
 
         const user = await UserReg.findById(decoded.userId).select("-password");
