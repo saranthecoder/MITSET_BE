@@ -1,54 +1,71 @@
 import shuffle from 'lodash/shuffle.js';
-import User from "../models/user.model.js";
 import generateTokenSetCookie from "../utils/generateToken.js";
 import Question from "../models/question.model.js";
 import UserAnswer from '../models/userAnswer.model.js';
+import UserReg from '../models/userSignup.model.js';
 
 // ---------------------user signup----------------------- ✅
+
+// Function to generate a random 10-digit number
+function generateHallTicketNo() {
+    return Math.floor(Math.random() * 9000000000) + 1000000000;
+}
+
 export const signUpUser = async (req, res) => {
-    console.log("signUpUser")
+    console.log("signUpUser");
     try {
-        const { hallTicketNo, dateOfBirth } = req.body;
+        const userData = req.body;
 
-        const user = await User.findOne({ hallTicketNo });
-        if (user) {
-            return res.status(400).json({ error: "User Already Exists" });
+        const { aadharNumber } = userData;
+
+        // Check if the user with the given Aadhar number already exists
+        const userExists = await UserReg.findOne({ aadharNumber });
+        if (userExists) {
+            return res.status(400).json({ error: "User Already Exists with this Aadhar number" });
         }
 
-        const newUser = new User({
-            hallTicketNo,
-            dateOfBirth
-        })
+        // Check if the hall ticket number already exists
+        let hallTicketNo = generateHallTicketNo();
+        let hallTicketExists = await UserReg.findOne({ hallTicketNo });
+        while (hallTicketExists) {
+            // Regenerate hall ticket number until it's unique
+            hallTicketNo = generateHallTicketNo();
+            userExists = await UserReg.findOne({ hallTicketNo });
+        }
 
-        if (newUser) {
-            //Generate JWT tokens
-            generateTokenSetCookie(newUser._id, res);
-            await newUser.save();
-            console.log("New User Created")
-            res.status(201).json({
-                _id: newUser._id,
-                hallTicketNo: newUser.hallTicketNo,
-                dateOfBirth: newUser.dateOfBirth,
-                // profilePic: newUser.profilePic
-            })
-        }
-        else {
-            res.status(400).json({ error: "Invalid user data" });
-        }
+        // Create a new user with the provided data and generated hall ticket number
+        const newUser = new UserReg({
+            ...userData,
+            hallTicketNo: hallTicketNo
+        });
+
+        // Save the new user to the database
+        await newUser.save();
+        console.log("New User Created");
+
+        console.log(newUser);
+
+        // Return the response with the generated hall ticket number
+        res.status(201).json({
+            _id: newUser._id,
+            hallTicketNo: newUser.hallTicketNo,
+            dateOfBirth: newUser.dateOfBirth,
+            // profilePic: newUser.profilePic
+        });
 
     } catch (error) {
-        console.log("Error in SignUpUser", error.message);
-        res.status(500).json({ error: "Internal Server error" })
-
+        console.log("Error in signUpUser", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
     }
-}
+};
+
 
 
 //-----------------user login---------------- ✅
 export const logInUser = async (req, res) => {
     try {
         const { hallTicketNo, dateOfBirth } = req.body;
-        const user = await User.findOne({ hallTicketNo });
+        const user = await UserReg.findOne({ hallTicketNo });
         // console.log(user)
 
         if (!user) {
@@ -121,7 +138,7 @@ export const storeUserAnswerData = async (req, res) => {
         questions.forEach(element => {
             if (element.subject == 'physics') {
                 physicsData = element.data;
-                console.log(typeof(physicsData));
+                console.log(typeof (physicsData));
             } else if (element.subject == 'chemistry') {
                 chemistryData = element.data;
             } else if (element.subject == 'mathematics') {
@@ -130,27 +147,11 @@ export const storeUserAnswerData = async (req, res) => {
         });
 
 
-        // const questionsDB = await Question.find({});
-        // questionsDB.forEach(element => {
-        //     if (element.subject == 'physics') {
-        //         physicsDataDB = element.data;
-        //         console.log(physicsDataDB);
-        //     } else if (element.subject == 'chemistry') {
-        //         chemistryDataDB = element.data;
-        //     } else if (element.subject == 'mathematics') {
-        //         mathematicsDataDB = element.data;
-        //     }
-        // });
-
-        // const physicsAnswers = await saveAnswers(physicsData, physicsDataDB);
-        // const chemistryAnswers = await saveAnswers(chemistryData, chemistryDataDB);
-        // const mathematicsAnswers = await saveAnswers(mathematicsData, mathematicsDataDB);
-
         const newUserAnswer = new UserAnswer({
             hallTicketNo,
             dateOfBirth: new Date(dateOfBirth),
             questions: [
-                { subject: 'physics', data: physicsData},
+                { subject: 'physics', data: physicsData },
                 { subject: 'chemistry', data: chemistryData },
                 { subject: 'mathematics', data: mathematicsData },
             ],
@@ -168,35 +169,3 @@ export const storeUserAnswerData = async (req, res) => {
     }
 
 };
-
-
-/*
-async function saveAnswers(data, dataDB) {
-    try {
-        const answers = [];
-
-        for (const item of data) {
-            const storedQuestion = dataDB.find(q => q.question === item.question);
-
-            if (storedQuestion) {
-                const selectedOption = storedQuestion.options.find(
-                    option => option.text === item.options
-                );
-
-                if (selectedOption) {
-
-                    answers.push({
-                        question: storedQuestion._id,
-                        options: selectedOption._id
-                    });
-                }
-            }
-        }
-
-        return answers;
-    } catch (error) {
-        console.error("Error in saveAnswers function:", error);
-    }
-}
-
-*/
