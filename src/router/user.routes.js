@@ -10,7 +10,7 @@ router.post('/loginUser', logInUser);  // ✅
 
 
 // Protect the route for getting user question papers ✅
-router.get('/getQuestionPaper', getUserQP);
+router.get('/getQuestionPaper', protectRoute, getUserQP);
 
 router.post('/submitQuestionPaper', protectRoute, storeUserAnswerData);// create submit and logout ✅
 
