@@ -3,6 +3,7 @@ import generateTokenSetCookie from "../utils/generateToken.js";
 import Question from "../models/question.model.js";
 import UserAnswer from '../models/userAnswer.model.js';
 import UserReg from '../models/userSignup.model.js';
+import StartTime from '../models/getTime.model.js';
 
 // ---------------------user signup----------------------- ✅
 
@@ -81,8 +82,10 @@ export const logInUser = async (req, res) => {
 
         generateTokenSetCookie(user._id, res);
 
+        const getTime = await StartTime.findOne();
+
         console.log("User Logged In");
-        res.status(200).json({ id: user._id, success: true });
+        res.status(200).json({ id: user._id, success: true, examStart:getTime.startTime});
     } catch (error) {
         console.log("Error in Login controller", error.message);
         res.status(500).json({ success: false, error: "Internal Server error" });
